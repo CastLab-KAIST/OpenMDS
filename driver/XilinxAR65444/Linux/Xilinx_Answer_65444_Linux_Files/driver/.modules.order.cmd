@@ -1,0 +1,1 @@
+cmd_/home/members/gyeongcheol/Desktop/XilinxAR65444/Linux/Xilinx_Answer_65444_Linux_Files/driver/modules.order := {   echo /home/members/gyeongcheol/Desktop/XilinxAR65444/Linux/Xilinx_Answer_65444_Linux_Files/driver/xdma.ko; :; } | awk '!x[$$0]++' - > /home/members/gyeongcheol/Desktop/XilinxAR65444/Linux/Xilinx_Answer_65444_Linux_Files/driver/modules.order

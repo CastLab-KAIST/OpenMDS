@@ -4,10 +4,9 @@
 
 from sys import prefix
 
-
-def get_ddr_dma_prefix(slr_num, ddr_dma_num):
-    slr = "SLR{:d}".format(int(slr_num))
-    ddr = "DDR"
+def get_ddr_dma_prefix(ddr_slr, ddr_ch, ddr_dma_num):
+    slr = "SLR{:01d}".format(int(ddr_slr))
+    ddr = "DDR{:01d}".format(int(ddr_ch))
     dma = "DMA{:02d}".format(int(ddr_dma_num))
     prefix = [
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_ADDR_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_araddr"],
@@ -18,7 +17,7 @@ def get_ddr_dma_prefix(slr_num, ddr_dma_num):
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_PROT_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_arprot"],
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_QOS_BITS-1:0]",   slr+"_"+ddr+"_"+dma+"_M_AXI_arqos"],
         ["input",   "logic",    " ",                                    slr+"_"+ddr+"_"+dma+"_M_AXI_arready"],
-        ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_REGION_BITS-1:0]",slr+"_"+ddr+"_"+dma+"_M_AXI_arregion"],
+        #["output",  "logic",    "["+slr+"_"+ddr+"_DMA_REGION_BITS-1:0]",slr+"_"+ddr+"_"+dma+"_M_AXI_arregion"],
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_SIZE_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_arsize"],
         ["output",  "logic",    " ",                                    slr+"_"+ddr+"_"+dma+"_M_AXI_arvalid"],
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_ADDR_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_awaddr"],
@@ -29,7 +28,7 @@ def get_ddr_dma_prefix(slr_num, ddr_dma_num):
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_PROT_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_awprot"],
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_QOS_BITS-1:0]",   slr+"_"+ddr+"_"+dma+"_M_AXI_awqos"],
         ["input",   "logic",    " ",                                    slr+"_"+ddr+"_"+dma+"_M_AXI_awready"],
-        ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_REGION_BITS-1:0]",slr+"_"+ddr+"_"+dma+"_M_AXI_awregion"],
+        #["output",  "logic",    "["+slr+"_"+ddr+"_DMA_REGION_BITS-1:0]",slr+"_"+ddr+"_"+dma+"_M_AXI_awregion"],
         ["output",  "logic",    "["+slr+"_"+ddr+"_DMA_SIZE_BITS-1:0]",  slr+"_"+ddr+"_"+dma+"_M_AXI_awsize"],
         ["output",  "logic",    " ",                                    slr+"_"+ddr+"_"+dma+"_M_AXI_awvalid"],
         ["output",  "logic",    " ",                                    slr+"_"+ddr+"_"+dma+"_M_AXI_bready"],
@@ -224,7 +223,7 @@ def get_hbm_dma_prefix(hbm_slr, hbm_port, hbm_dma_num):
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_PROT_BITS-1:0]",  slr+"_"+hbm+"_"+dma+"_M_AXI_arprot"],
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_QOS_BITS-1:0]",   slr+"_"+hbm+"_"+dma+"_M_AXI_arqos"],
         ["input",   "logic",    " ",                                    slr+"_"+hbm+"_"+dma+"_M_AXI_arready"],
-        ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_REGION_BITS-1:0]",slr+"_"+hbm+"_"+dma+"_M_AXI_arregion"],
+        #["output",  "logic",    "["+slr+"_"+hbm+"_DMA_REGION_BITS-1:0]",slr+"_"+hbm+"_"+dma+"_M_AXI_arregion"],
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_SIZE_BITS-1:0]",  slr+"_"+hbm+"_"+dma+"_M_AXI_arsize"],
         ["output",  "logic",    " ",                                    slr+"_"+hbm+"_"+dma+"_M_AXI_arvalid"],
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_ADDR_BITS-1:0]",  slr+"_"+hbm+"_"+dma+"_M_AXI_awaddr"],
@@ -235,7 +234,7 @@ def get_hbm_dma_prefix(hbm_slr, hbm_port, hbm_dma_num):
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_PROT_BITS-1:0]",  slr+"_"+hbm+"_"+dma+"_M_AXI_awprot"],
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_QOS_BITS-1:0]",   slr+"_"+hbm+"_"+dma+"_M_AXI_awqos"],
         ["input",   "logic",    " ",                                    slr+"_"+hbm+"_"+dma+"_M_AXI_awready"],
-        ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_REGION_BITS-1:0]",slr+"_"+hbm+"_"+dma+"_M_AXI_awregion"],
+        #["output",  "logic",    "["+slr+"_"+hbm+"_DMA_REGION_BITS-1:0]",slr+"_"+hbm+"_"+dma+"_M_AXI_awregion"],
         ["output",  "logic",    "["+slr+"_"+hbm+"_DMA_SIZE_BITS-1:0]",  slr+"_"+hbm+"_"+dma+"_M_AXI_awsize"],
         ["output",  "logic",    " ",                                    slr+"_"+hbm+"_"+dma+"_M_AXI_awvalid"],
         ["output",  "logic",    " ",                                    slr+"_"+hbm+"_"+dma+"_M_AXI_bready"],
@@ -372,9 +371,9 @@ def get_crossing_stream_prefix(slr_a, slr_b, fifo_width, fifo_num):
         ["input",   "logic",    "["+data_width+":0]",                   slr_a+"_FROM_"+slr_b+"_S"+fifo_num+"_AXIS_tdata"],
         ["output",  "logic",    " ",                                    slr_a+"_FROM_"+slr_b+"_S"+fifo_num+"_AXIS_tready"],
         ["input",   "logic",    " ",                                    slr_a+"_FROM_"+slr_b+"_S"+fifo_num+"_AXIS_tvalid"],
-        ["input",   "logic",    "["+data_width+":0]",                   slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tdata"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tready"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tvalid"]
+        ["output",  "logic",    "["+data_width+":0]",                   slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tdata"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tready"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M"+fifo_num+"_AXIS_tvalid"]
     ]
     return prefix, len(prefix)
 
@@ -401,25 +400,25 @@ def get_crossing_lite_prefix(slr_a, slr_b):
         ["output",  "logic",    " ",                                    slr_a+"_FROM_"+slr_b+"_S_AXI_LITE_wready"],
         ["input",   "logic",    "["+slr_a+"_DMA_STRB_BITS-1:0]",        slr_a+"_FROM_"+slr_b+"_S_AXI_LITE_wstrb"],
         ["input",   "logic",    " ",                                    slr_a+"_FROM_"+slr_b+"_S_AXI_LITE_wvalid"],
-        ["input",   "logic",    "["+slr_a+"_DMA_ADDR_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_araddr"],
-        ["input",   "logic",    "["+slr_a+"_DMA_PROT_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arprot"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arready"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arvalid"],
-        ["input",   "logic",    "["+slr_a+"_DMA_ADDR_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awaddr"],
-        ["input",   "logic",    "["+slr_a+"_DMA_PROT_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awprot"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awready"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awvalid"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bready"],
-        ["output",  "logic",    "["+slr_a+"_DMA_RESP_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bresp"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bvalid"],
-        ["output",  "logic",    "["+slr_a+"_DMA_DATA_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rdata"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rready"],
-        ["output",  "logic",    "["+slr_a+"_DMA_RESP_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rresp"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rvalid"],
-        ["input",   "logic",    "["+slr_a+"_DMA_DATA_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wdata"],
-        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wready"],
-        ["input",   "logic",    "["+slr_a+"_DMA_STRB_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wstrb"],
-        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wvalid"]
+        ["output",  "logic",    "["+slr_a+"_DMA_ADDR_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_araddr"],
+        ["output",  "logic",    "["+slr_a+"_DMA_PROT_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arprot"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arready"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_arvalid"],
+        ["output",  "logic",    "["+slr_a+"_DMA_ADDR_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awaddr"],
+        ["output",  "logic",    "["+slr_a+"_DMA_PROT_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awprot"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awready"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_awvalid"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bready"],
+        ["input",   "logic",    "["+slr_a+"_DMA_RESP_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bresp"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_bvalid"],
+        ["input",   "logic",    "["+slr_a+"_DMA_DATA_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rdata"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rready"],
+        ["input",   "logic",    "["+slr_a+"_DMA_RESP_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rresp"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_rvalid"],
+        ["output",  "logic",    "["+slr_a+"_DMA_DATA_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wdata"],
+        ["input",   "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wready"],
+        ["output",  "logic",    "["+slr_a+"_DMA_STRB_BITS-1:0]",        slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wstrb"],
+        ["output",  "logic",    " ",                                    slr_a+"_TO_"+slr_b+"_M_AXI_LITE_wvalid"]
     ]
     return prefix, len(prefix)
 
@@ -450,14 +449,15 @@ def get_board_ddr_prefix(board, ddr_ch, port_type=0):
             ]
 
     else : 
-        print("ERROR : Not Yet Supported Board")
+        print("ERROR : {} is not supported".format(board))
     return prefix, len(prefix)
+    
 
 def get_vcu_prefix():
     prefix = [
-        ["input",     "user_si570_clock_clk_n",         " "],
-        ["input",     "user_si570_clock_clk_p",         " "],
-        ["input",     "dip_switches_4bits_tri_i",       "[3:0]"],
+        #["input",     "user_si570_clock_clk_n",         " "],
+        #["input",     "user_si570_clock_clk_p",         " "],
+        #["input",     "dip_switches_4bits_tri_i",       "[3:0]"],
         ["input",     "pci_express_x16_rxn",            "[15:0]"],
         ["input",     "pci_express_x16_rxp",            "[15:0]"],
         ["output",    "pci_express_x16_txn",            "[15:0]"],
@@ -471,11 +471,11 @@ def get_vcu_prefix():
 
 def get_u50_prefix():
     prefix = [
-        ["input",    "cmc_clk_clk_n",                   " "],
-        ["input",    "cmc_clk_clk_p",                   " "],
-        ["input",    "hbm_clk_clk_n",                   " "],
-        ["input",    "hbm_clk_clk_p",                   " "],
-        ["input",    "gpio_si5394_tri_i",               "[2:0]"],
+        #["input",    "cmc_clk_clk_n",                   " "],
+        #["input",    "cmc_clk_clk_p",                   " "],
+        #["input",    "hbm_clk_clk_n",                   " "],
+        #["input",    "hbm_clk_clk_p",                   " "],
+        #["input",    "gpio_si5394_tri_i",               "[2:0]"],
         ["input",    "pci_express_x16_rxn",             "[15:0]"],
         ["input",    "pci_express_x16_rxp",             "[15:0]"],
         ["output",   "pci_express_x16_txn",             "[15:0]"],
@@ -485,6 +485,7 @@ def get_u50_prefix():
         ["input",    "pcie_refclk_clk_p",               " "]
     ]
     return prefix, len(prefix)
+
 
 def get_clk_wiz_prefix():
     prefix = [
@@ -803,6 +804,48 @@ def get_hbm_prefix(hbm_num, port_type=0):
                 ["output",    hbm+"_S_AXI_rresp",               "[HBM_RESP_BITS-1:0]"],
                 ["output",    hbm+"_S_AXI_rvalid",              " "],
                 ["input",     hbm+"_S_AXI_wdata",               "[HBM_DATA_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_wlast",               " "],
+                ["output",    hbm+"_S_AXI_wready",              " "],
+                ["input",     hbm+"_S_AXI_wstrb",               "[HBM_STRB_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_wvalid",              " "]
+            ]
+
+        elif int(port_type) == 4:
+            prefix = [
+                ["input",     hbm+"_S_AXI_araddr",              "[HBM_ADDR_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arburst",             "[HBM_BURST_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arcache",             "[HBM_CACHE_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arid",                "[HBM_ID_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arlen",               "[HBM_LEN_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arlock",              "[HBM_LOCK_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arprot",              "[HBM_PROT_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arqos",               "[HBM_QOS_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_arready",             " "],
+                ["input",     hbm+"_S_AXI_arsize",              "[HBM_SIZE_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_arvalid",             " "],
+                ["input",     hbm+"_S_AXI_awaddr",              "[HBM_ADDR_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awburst",             "[HBM_BURST_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awcache",             "[HBM_CACHE_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awid",                "[HBM_ID_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awlen",               "[HBM_LEN_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awlock",              "[HBM_LOCK_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awprot",              "[HBM_PROT_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awqos",               "[HBM_QOS_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_awready",             " "],
+                ["input",     hbm+"_S_AXI_awsize",              "[HBM_SIZE_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_awvalid",             " "],
+                ["output",    hbm+"_S_AXI_bid",                 "[HBM_ID_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_bready",              " "],
+                ["output",    hbm+"_S_AXI_bresp",               "[HBM_RESP_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_bvalid",              " "],
+                ["output",    hbm+"_S_AXI_rdata",               "[HBM_DATA_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_rid",                 "[HBM_ID_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_rlast",               " "],
+                ["input",     hbm+"_S_AXI_rready",              " "],
+                ["output",    hbm+"_S_AXI_rresp",               "[HBM_RESP_BITS-1:0]"],
+                ["output",    hbm+"_S_AXI_rvalid",              " "],
+                ["input",     hbm+"_S_AXI_wdata",               "[HBM_DATA_BITS-1:0]"],
+                ["input",     hbm+"_S_AXI_wid",                 "[HBM_ID_BITS-1:0]"],
                 ["input",     hbm+"_S_AXI_wlast",               " "],
                 ["output",    hbm+"_S_AXI_wready",              " "],
                 ["input",     hbm+"_S_AXI_wstrb",               "[HBM_STRB_BITS-1:0]"],
@@ -1253,31 +1296,67 @@ def get_slr_prefix(slr_num):
 
     return prefix, len(prefix)
 
-def get_ddr_dma_parameters(slr_num, ddr_dma_width):
-    slr = "SLR" + str(slr_num)
-    ddr = "DDR"
-    params = [
-        [slr + "_" + ddr + "_DMA_ADDR_BITS",              "64"],
-        [slr + "_" + ddr + "_DMA_BURST_BITS",             "2"],
-        [slr + "_" + ddr + "_DMA_CACHE_BITS",             "4"],
-        [slr + "_" + ddr + "_DMA_LEN_BITS",               "8"],
-        [slr + "_" + ddr + "_DMA_LOCK_BITS",              "1"],
-        [slr + "_" + ddr + "_DMA_PROT_BITS",              "3"],
-        [slr + "_" + ddr + "_DMA_QOS_BITS",               "4"],
-        [slr + "_" + ddr + "_DMA_REGION_BITS",            "4"],
-        [slr + "_" + ddr + "_DMA_SIZE_BITS",              "3"],
-        [slr + "_" + ddr + "_DMA_RESP_BITS",              "2"],
-        [slr + "_" + ddr + "_DMA_DATA_BITS",              str(ddr_dma_width)],
-        [slr + "_" + ddr + "_DMA_STRB_BITS",              slr + "_" + ddr + "_DMA_DATA_BITS / 8"]
-    ]
+def get_ddr_dma_parameters(ddr_slr, ddr_ch, ddr_dma_width,board):
+    slr = "SLR" + str(ddr_slr)
+    ddr = "DDR{:01d}".format(int(ddr_ch))
+    if(board == 'VCU118'):
+        params = [
+            [slr + "_" + ddr + "_DMA_ADDR_BITS",              "31"],
+            [slr + "_" + ddr + "_DMA_BURST_BITS",             "2"],
+            [slr + "_" + ddr + "_DMA_CACHE_BITS",             "4"],
+            [slr + "_" + ddr + "_DMA_LEN_BITS",               "8"],
+            [slr + "_" + ddr + "_DMA_LOCK_BITS",              "1"],
+            [slr + "_" + ddr + "_DMA_PROT_BITS",              "3"],
+            [slr + "_" + ddr + "_DMA_QOS_BITS",               "4"],
+            [slr + "_" + ddr + "_DMA_REGION_BITS",            "4"],
+            [slr + "_" + ddr + "_DMA_SIZE_BITS",              "3"],
+            [slr + "_" + ddr + "_DMA_RESP_BITS",              "2"],
+            [slr + "_" + ddr + "_DMA_DATA_BITS",              str(ddr_dma_width)],
+            [slr + "_" + ddr + "_DMA_STRB_BITS",              slr + "_" + ddr + "_DMA_DATA_BITS / 8"]
+        ]
+    else:
+        params = [
+            [slr + "_" + ddr + "_DMA_ADDR_BITS",              "34"],
+            [slr + "_" + ddr + "_DMA_BURST_BITS",             "2"],
+            [slr + "_" + ddr + "_DMA_CACHE_BITS",             "4"],
+            [slr + "_" + ddr + "_DMA_LEN_BITS",               "8"],
+            [slr + "_" + ddr + "_DMA_LOCK_BITS",              "1"],
+            [slr + "_" + ddr + "_DMA_PROT_BITS",              "3"],
+            [slr + "_" + ddr + "_DMA_QOS_BITS",               "4"],
+            [slr + "_" + ddr + "_DMA_REGION_BITS",            "4"],
+            [slr + "_" + ddr + "_DMA_SIZE_BITS",              "3"],
+            [slr + "_" + ddr + "_DMA_RESP_BITS",              "2"],
+            [slr + "_" + ddr + "_DMA_DATA_BITS",              str(ddr_dma_width)],
+            [slr + "_" + ddr + "_DMA_STRB_BITS",              slr + "_" + ddr + "_DMA_DATA_BITS / 8"]
+        ]
     
     return params, len(params)
+
+#def get_ddr_dma_parameters(slr_num, ddr_dma_width):
+#    slr = "SLR" + str(slr_num)
+#    ddr = "DDR"
+#    params = [
+#        [slr + "_" + ddr + "_DMA_ADDR_BITS",              "64"],
+#        [slr + "_" + ddr + "_DMA_BURST_BITS",             "2"],
+#        [slr + "_" + ddr + "_DMA_CACHE_BITS",             "4"],
+#        [slr + "_" + ddr + "_DMA_LEN_BITS",               "8"],
+#        [slr + "_" + ddr + "_DMA_LOCK_BITS",              "1"],
+#        [slr + "_" + ddr + "_DMA_PROT_BITS",              "3"],
+#        [slr + "_" + ddr + "_DMA_QOS_BITS",               "4"],
+#        [slr + "_" + ddr + "_DMA_REGION_BITS",            "4"],
+#        [slr + "_" + ddr + "_DMA_SIZE_BITS",              "3"],
+#        [slr + "_" + ddr + "_DMA_RESP_BITS",              "2"],
+#        [slr + "_" + ddr + "_DMA_DATA_BITS",              str(ddr_dma_width)],
+#        [slr + "_" + ddr + "_DMA_STRB_BITS",              slr + "_" + ddr + "_DMA_DATA_BITS / 8"]
+#    ]
+#    
+#    return params, len(params)
 
 def get_hbm_dma_parameters(hbm_slr, host_port, hbm_dma_width):
     slr = "SLR" + str(hbm_slr)
     hbm = "HBM{:02d}".format(int(host_port))
     params = [
-        [slr + "_" + hbm + "_DMA_ADDR_BITS",              "64"],
+        [slr + "_" + hbm + "_DMA_ADDR_BITS",              "33"],
         [slr + "_" + hbm + "_DMA_BURST_BITS",             "2"],
         [slr + "_" + hbm + "_DMA_CACHE_BITS",             "4"],
         [slr + "_" + hbm + "_DMA_LEN_BITS",               "8"],
@@ -1296,7 +1375,7 @@ def get_hbm_dma_parameters(hbm_slr, host_port, hbm_dma_width):
 def get_host_parameters(slr_num, host_width):
     slr = "SLR" + str(slr_num)
     params = [
-        [slr + "_HOST_AXI_LITE_ADDR_BITS",    "64"],
+        [slr + "_HOST_AXI_LITE_ADDR_BITS",    "32"],
         [slr + "_HOST_AXI_LITE_PROT_BITS",    "3"],
         [slr + "_HOST_AXI_LITE_RESP_BITS",    "2"],
         [slr + "_HOST_AXI_LITE_DATA_BITS",    "32"],
@@ -1318,7 +1397,7 @@ def get_host_parameters(slr_num, host_width):
 
 def get_bd_parameters(bd_name, f_d):
     if bd_name == "VCU118" :
-        f_d.write("    parameter DDR_ADDR_BITS                                                 = 64;\n"                         )
+        f_d.write("    parameter DDR_ADDR_BITS                                                 = 31;\n"                         )
         f_d.write("    parameter DDR_BURST_BITS                                                = 2;\n"                          )
         f_d.write("    parameter DDR_CACHE_BITS                                                = 4;\n"                          )
         f_d.write("    parameter DDR_ID_BITS                                                   = 4;\n"                          )
@@ -1330,7 +1409,7 @@ def get_bd_parameters(bd_name, f_d):
         f_d.write("    parameter DDR_SIZE_BITS                                                 = 3;\n"                          )
         f_d.write("    parameter DDR_RESP_BITS                                                 = 2;\n"                          )
         f_d.write("    parameter DDR_DATA_BITS                                                 = 512;\n"                        )
-        f_d.write("    parameter DDR_STRB_BITS                                                 = DDR_DATA_BITS / 8;\n"         )
+        f_d.write("    parameter DDR_STRB_BITS                                                 = DDR_DATA_BITS / 8;\n"          )
         f_d.write("    parameter XDMA_ADDR_BITS                                                = 64;\n"                         )
         f_d.write("    parameter XDMA_BURST_BITS                                               = 2;\n"                          )
         f_d.write("    parameter XDMA_CACHE_BITS                                               = 4;\n"                          )
@@ -1343,12 +1422,12 @@ def get_bd_parameters(bd_name, f_d):
         f_d.write("    parameter XDMA_SIZE_BITS                                                = 3;\n"                          )
         f_d.write("    parameter XDMA_RESP_BITS                                                = 2;\n"                          )
         f_d.write("    parameter XDMA_DATA_BITS                                                = 512;\n"                        )
-        f_d.write("    parameter XDMA_STRB_BITS                                                = XDMA_DATA_BITS / 8;\n"        )
+        f_d.write("    parameter XDMA_STRB_BITS                                                = XDMA_DATA_BITS / 8;\n"         )
         f_d.write("    parameter XDMA_LITE_ADDR_BITS                                           = 32;\n"                         )
         f_d.write("    parameter XDMA_LITE_PROT_BITS                                           = 3;\n"                          )
         f_d.write("    parameter XDMA_LITE_RESP_BITS                                           = 2;\n"                          )
         f_d.write("    parameter XDMA_LITE_DATA_BITS                                           = 32;\n"                         )
-        f_d.write("    parameter XDMA_LITE_STRB_BITS                                           = XDMA_LITE_DATA_BITS / 8;\n"   )
+        f_d.write("    parameter XDMA_LITE_STRB_BITS                                           = XDMA_LITE_DATA_BITS / 8;\n"    )
         f_d.write("    parameter GPIO_LITE_ADDR_BITS                                           = XDMA_LITE_ADDR_BITS;\n"        )
         f_d.write("    parameter GPIO_LITE_RESP_BITS                                           = XDMA_LITE_RESP_BITS;\n"        )
         f_d.write("    parameter GPIO_LITE_DATA_BITS                                           = XDMA_LITE_DATA_BITS;\n"        )
@@ -1371,7 +1450,7 @@ def get_bd_parameters(bd_name, f_d):
         f_d.write("    parameter HBM_SIZE_BITS                                                 = 3;\n"                          )
         f_d.write("    parameter HBM_RESP_BITS                                                 = 2;\n"                          )
         f_d.write("    parameter HBM_DATA_BITS                                                 = 256;\n"                        )
-        f_d.write("    parameter HBM_STRB_BITS                                                 = HBM_DATA_BITS / 8;\n"         )
+        f_d.write("    parameter HBM_STRB_BITS                                                 = HBM_DATA_BITS / 8;\n"          )
         f_d.write("    parameter XDMA_ADDR_BITS                                                = 64;\n"                         )
         f_d.write("    parameter XDMA_BURST_BITS                                               = 2;\n"                          )
         f_d.write("    parameter XDMA_CACHE_BITS                                               = 4;\n"                          )
@@ -1384,12 +1463,12 @@ def get_bd_parameters(bd_name, f_d):
         f_d.write("    parameter XDMA_SIZE_BITS                                                = 3;\n"                          )
         f_d.write("    parameter XDMA_RESP_BITS                                                = 2;\n"                          )
         f_d.write("    parameter XDMA_DATA_BITS                                                = 512;\n"                        )
-        f_d.write("    parameter XDMA_STRB_BITS                                                = XDMA_DATA_BITS / 8;\n"        )
+        f_d.write("    parameter XDMA_STRB_BITS                                                = XDMA_DATA_BITS / 8;\n"         )
         f_d.write("    parameter XDMA_LITE_ADDR_BITS                                           = 32;\n"                         )
         f_d.write("    parameter XDMA_LITE_PROT_BITS                                           = 3;\n"                          )
         f_d.write("    parameter XDMA_LITE_RESP_BITS                                           = 2;\n"                          )
         f_d.write("    parameter XDMA_LITE_DATA_BITS                                           = 32;\n"                         )
-        f_d.write("    parameter XDMA_LITE_STRB_BITS                                           = XDMA_LITE_DATA_BITS / 8;\n"   )
+        f_d.write("    parameter XDMA_LITE_STRB_BITS                                           = XDMA_LITE_DATA_BITS / 8;\n"    )
         f_d.write("    parameter GPIO_LITE_ADDR_BITS                                           = XDMA_LITE_ADDR_BITS;\n"        )
         f_d.write("    parameter GPIO_LITE_RESP_BITS                                           = XDMA_LITE_RESP_BITS;\n"        )
         f_d.write("    parameter GPIO_LITE_DATA_BITS                                           = XDMA_LITE_DATA_BITS;\n"        )
@@ -1399,6 +1478,7 @@ def get_bd_parameters(bd_name, f_d):
         f_d.write("    parameter CLK_WIZ_LITE_RESP_BITS                                        = XDMA_LITE_RESP_BITS;\n"        )
         f_d.write("    parameter CLK_WIZ_LITE_DATA_BITS                                        = XDMA_LITE_DATA_BITS;\n"        )
         f_d.write("    parameter CLK_WIZ_LITE_STRB_BITS                                        = XDMA_LITE_STRB_BITS;\n"        )
+
     f_d.write("\n")
 
     return

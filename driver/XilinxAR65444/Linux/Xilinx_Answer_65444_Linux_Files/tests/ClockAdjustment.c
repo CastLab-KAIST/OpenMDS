@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
           printf("Original Period = %3fns\n", original_period);
           printf("WNS = %3f\n", WNS);
           scaled_period = WNS + original_period;
-          scaled_period = (int)(scaled_period * 1000) / 1000;
+          //scaled_period = ((int)(scaled_period * 1000)) / 1000;
 
           printf("Scaled Period = %3fns\n", scaled_period);
           scaled_clk = 1000 / scaled_period;

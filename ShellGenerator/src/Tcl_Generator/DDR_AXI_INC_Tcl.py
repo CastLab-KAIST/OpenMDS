@@ -11,11 +11,11 @@ import shutil
 ################################################################
 
 ''' DDR AXI_INC Tcl Generate '''
-def DDR_AXI_INC_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_list=None):
+def DDR_AXI_INC_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_list=None,vivado_version="2020.2"):
     # Copy and Open Reference Tcl File
 
     gen_tcl = os.path.join(filedir, board + "_DDR_AXI_INC.tcl")
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_0.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_0.tcl")
 
     if(board == 'VCU118'):
         total_ddr_ch_list = ['false' for i in range(2)]
@@ -34,8 +34,6 @@ def DDR_AXI_INC_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None,
     elif(board == 'U280'):
         total_ddr_ch_list = ['false' for i in range(2)]
         ddr_ch_intf_list = [[]for i in range(2)]
-        print("Implementing")
-        return os.exit()
 
 
     if(xdma_ddr_ch != None):
@@ -48,14 +46,12 @@ def DDR_AXI_INC_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None,
             total_ddr_ch_list[int(ddr_ch_list[i])] = 'true'
             ddr_ch_intf_list[int(ddr_ch_list[i])].append(ddr_slr_list[i])
 
-    if 'true' in total_ddr_ch_list :
-        print("total_ddr_ch_list")
-        print(total_ddr_ch_list)
-        print("ddr_ch_intf_list")
-        print(ddr_ch_intf_list)
+    if 'true' in total_ddr_ch_list : 
+        print("DDR Path Exist : DDR_AXI_INC.TCL Generated")
     else :
         print("No DDR Path : DDR_AXI_INC.Tcl Not Generated")
         return
+
 
     shutil.copy(ref_tcl, gen_tcl)
     # Change Tcl Name
@@ -207,14 +203,16 @@ def DDR_AXI_INC_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None,
             # Start of Address Segments
             for i in range(len(total_ddr_ch_list)) :
                 if(total_ddr_ch_list[i] != 'false'):
-                    f_d.write("assign_bd_address -offset " + str(hex(8*i)) + "0000000 -range 0x80000000 [get_bd_addr_segs DDR{:01d}".format(i) +"_S_AXI/Reg]\n")
+                    f_d.write("assign_bd_address -offset " + "0x00000000 -range 0x80000000 [get_bd_addr_segs DDR{:01d}".format(i) +"_S_AXI/Reg]\n")
             # End of Address Segments
             f_d.write("\n")
         # End of VCU118
-        elif(board == 'U280') :
-            print("not Yet support U280")
+#######################################
+#######################################
+#######################################
+#######################################
     # End of file descriptor
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_1.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_1.tcl")
     with open(gen_tcl, 'a') as f_d, open(ref_tcl, 'r') as f_r:
         for line in f_r:
             f_d.write(line)

@@ -11,10 +11,10 @@ import shutil
 ################################################################
 
 ''' Crossing AXIS Tcl Generate '''
-def Crossing_AXIS_Tcl(filedir, refdir, slr_list, slr_freq_list, src_list, dest_list, num_list, data_width_list):
+def Crossing_AXIS_Tcl(filedir, refdir, slr_list, slr_freq_list, src_list, dest_list, num_list, data_width_list, vivado_version):
     # Copy and Open Reference Tcl File
     gen_tcl = os.path.join(filedir, "CROSSING_AXIS.tcl")
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_0.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_0.tcl")
     shutil.copy(ref_tcl, gen_tcl)
     # Change Tcl Name
     search_name = 'DESIGN_BOARD_NAME'
@@ -162,7 +162,7 @@ def Crossing_AXIS_Tcl(filedir, refdir, slr_list, slr_freq_list, src_list, dest_l
             f_d.write("\n\n")
 
     # End of wrting tcl file descriptor
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_1.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_1.tcl")
     with open(gen_tcl, 'a') as f_d, open(ref_tcl, 'r') as f_r:
         for line in f_r:
             f_d.write(line)

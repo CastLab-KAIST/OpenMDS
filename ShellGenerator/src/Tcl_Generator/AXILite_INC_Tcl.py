@@ -96,7 +96,10 @@ def AXILite_INC_Tcl(filedir, refdir, board, slr_list, slr_freq_list):
                 f_d.write("set_property -dict [ list \\\n")
                 f_d.write("\tCONFIG.ADDR_WIDTH {32} \\\n")
                 f_d.write("\tCONFIG.DATA_WIDTH {32} \\\n")
-                f_d.write("\tCONFIG.FREQ_HZ {"+ slr_freq_list[i] +"000000} \\\n")
+                if(int(slr_freq_list[i])>300):
+                    f_d.write("\tCONFIG.FREQ_HZ {"+ slr_freq_list[i] +"000000} \\\n")
+                else:
+                    f_d.write("\tCONFIG.FREQ_HZ {300000000} \\\n")
                 f_d.write("\tCONFIG.HAS_BURST {0} \\\n")
                 f_d.write("\tCONFIG.HAS_CACHE {0} \\\n")
                 f_d.write("\tCONFIG.HAS_LOCK {0} \\\n")
@@ -115,7 +118,11 @@ def AXILite_INC_Tcl(filedir, refdir, board, slr_list, slr_freq_list):
             f_d.write("set XDMA_CLK_RESETN [ create_bd_port -dir I -type rst XDMA_CLK_RESETN ] \n\n")
 
             for i in range (len(slr_list)) :
-                f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz " + slr_freq_list[i] + "000000" + " SLR" + slr_list[i] + "_CLK ] \n")
+                if(int(slr_freq_list[i]) > 300):
+                    f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz " + slr_freq_list[i] + "000000" + " SLR" + slr_list[i] + "_CLK ] \n")
+                else:
+                    f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz 300000000" + " SLR" + slr_list[i] + "_CLK ] \n")
+                    
                 f_d.write("set_property -dict [ list \\\n")
                 f_d.write("\tCONFIG.ASSOCIATED_RESET {SLR" + slr_list[i] + "_CLK_RESETN} \\\n")
                 f_d.write("\tCONFIG.ASSOCIATED_BUSIF {SLR" + slr_list[i] + "_HOST_S_AXI_LITE} \\\n")
@@ -268,7 +275,10 @@ def AXILite_INC_Tcl(filedir, refdir, board, slr_list, slr_freq_list):
                 f_d.write("set_property -dict [ list \\\n")
                 f_d.write("\tCONFIG.ADDR_WIDTH {32} \\\n")
                 f_d.write("\tCONFIG.DATA_WIDTH {32} \\\n")
-                f_d.write("\tCONFIG.FREQ_HZ {"+ slr_freq_list[i] +"000000} \\\n")
+                if(int(slr_freq_list[i]) > 300):
+                    f_d.write("\tCONFIG.FREQ_HZ {"+ slr_freq_list[i] +"000000} \\\n")
+                else:
+                    f_d.write("\tCONFIG.FREQ_HZ {300000000} \\\n")
                 f_d.write("\tCONFIG.HAS_BURST {0} \\\n")
                 f_d.write("\tCONFIG.HAS_CACHE {0} \\\n")
                 f_d.write("\tCONFIG.HAS_LOCK {0} \\\n")
@@ -285,7 +295,10 @@ def AXILite_INC_Tcl(filedir, refdir, board, slr_list, slr_freq_list):
             f_d.write("set XDMA_CLK_RESETN [ create_bd_port -dir I -type rst XDMA_CLK_RESETN ] \n\n")
 
             for i in range (len(slr_list)) :
-                f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz " + slr_freq_list[i] + "000000" + " SLR" + slr_list[i] + "_CLK ] \n")
+                if(int(slr_freq_list[i])>300):
+                    f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz " + slr_freq_list[i] + "000000" + " SLR" + slr_list[i] + "_CLK ] \n")
+                else:
+                    f_d.write("set SLR" + slr_list[i] + "_CLK [ create_bd_port -dir I -type clk -freq_hz 300000000" + " SLR" + slr_list[i] + "_CLK ] \n")
                 f_d.write("set_property -dict [ list \\\n")
                 f_d.write("\tCONFIG.ASSOCIATED_RESET {SLR" + slr_list[i] + "_CLK_RESETN} \\\n")
                 f_d.write("\tCONFIG.ASSOCIATED_BUSIF {SLR" + slr_list[i] + "_HOST_S_AXI_LITE} \\\n")

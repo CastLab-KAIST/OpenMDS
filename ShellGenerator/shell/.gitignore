@@ -1,0 +1,14 @@
+## Generated File 
+#shell
+bin
+*.sv
+*.xdc
+*.tcl
+## Python
+*.pyc
+
+## VS-CODE
+.vscode/
+
+## Data
+*.hex

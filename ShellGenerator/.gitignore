@@ -1,9 +1,9 @@
 ## Generated File 
 #shell
 bin
-*.sv
-*.xdc
-*.tcl
+#*.sv
+#*.xdc
+#*.tcl
 ## Python
 *.pyc
 

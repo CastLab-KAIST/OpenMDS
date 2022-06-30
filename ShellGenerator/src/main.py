@@ -116,6 +116,9 @@ parser.add_argument('--fifo_number', dest='fifo_number', type=str,
 parser.add_argument('--fifo_width', dest='fifo_width', type=str,
                     help='Data-width of AXI FIFO')
 
+parser.add_argument('--version', default='2020.2', type=str,
+                    help='Vivado Version')
+
 ################################################################
 # Main
 ################################################################
@@ -141,15 +144,19 @@ def main(args):
         options = configparser.ConfigParser()
         options.read(args.file)
         config = config_dict(board_config[board], ifile=options, file_mode=True)
+        
         crossing = (options["Crossing"]["cross"].lower() == "true")
         # SLR Crossing
         if crossing:
             fifo_config = fifo_dict(ifile=options, file_mode=True)
     print("[{}] Parameter Load Complete!".format(PASS))
+    
+    vivado_version = args.version
+    
     ############################################################
     # 2. Check Options and Make lists
     print("[Info ] Checking Shell Parameters...")
-    dma_type = board_config[board]["DMA"].split()
+    #dma_type = board_config[board]["DMA"].split(",")
     
     bd_dir, wrapper_dir, xdc_dir =  dir_check(args.dir, board)
     
@@ -184,22 +191,30 @@ def main(args):
     
 
     # Memory Type
-    if "ddr" in dma_type:
-        ddr_dma_max = int(board_config[board]["DDR"])
-        ddr_dma_list, ddr_dma_width, xdma_ddr_ch, ddr_slr_list, ddr_ch_list = ddr_dma_config(config, ddr_dma_max)
+    if board == "U280" or board == "VCU118":
+        #ddr_dma_max = int(board_config[board]["DDR"])
+        ddr_dma_list, ddr_dma_width, xdma_ddr_ch, ddr_slr_list, ddr_ch_list = ddr_dma_config(config)
     else :
-        ddr_dma_max = None
+        #ddr_dma_max = None
         ddr_dma_list, ddr_dma_width, xdma_ddr_ch, ddr_slr_list, ddr_ch_list = None, None, None, None, None
 
-    if "hbm" in dma_type:
-        hbm_dma_max = int(board_config[board]["HBM"])
-        xdma_hbm_port, hbm_slr_list, hbm_port_list, hbm_dma_list, hbm_dma_width_list, hbm_clk_freq = hbm_dma_config(config, hbm_dma_max)
+    if board == "U50" or board == "U280":
+        #hbm_dma_max = int(board_config[board]["HBM"])
+        xdma_hbm_port, hbm_slr_list, hbm_port_list, hbm_dma_list, hbm_dma_width_list, hbm_clk_freq = hbm_dma_config(config)
     
     else :
-        hbm_dma_max = None
+        #hbm_dma_max = None
         xdma_hbm_port, hbm_slr_list, hbm_port_list, hbm_dma_list, hbm_dma_width_list, hbm_clk_freq = None, None, None, None, None, None
 
+    memory_type = []
+
+    if((ddr_dma_list != None) or (xdma_ddr_ch != None)):
+        memory_type.append("ddr")
     
+    if((hbm_slr_list != None) or (xdma_hbm_port != None)):
+        memory_type.append("hbm")
+
+
     slr_list, slr_freq_list, slr_host_width_list, \
     xdma_ddr_ch, ddr_slr_list, ddr_ch_list, ddr_dma_list, ddr_dma_width, \
     xdma_hbm_port, hbm_slr_list, hbm_port_list, hbm_dma_list, hbm_dma_width_list, hbm_clk_freq = \
@@ -207,13 +222,22 @@ def main(args):
             xdma_ddr_ch, ddr_slr_list, ddr_ch_list, ddr_dma_list, ddr_dma_width, 
             xdma_hbm_port, hbm_slr_list, hbm_port_list, hbm_dma_list, hbm_dma_width_list, hbm_clk_freq)
 
-    # Check ddr_dma_list slr_list
-    if 'ddr' in dma_type:
-        if(ddr_dma_list != None) :
-            if len(slr_list) != len(ddr_dma_list) or \
-            len(slr_list) != len(ddr_dma_width) :
-                print("[{}] Diffrent Num of SLR and DDR_dma Options!".format(ERROR))
-                exit()
+    # Check number of slr_list
+    if(board == 'VCU118'):
+        if(len(slr_list) > 3):
+            print("[{}] Wrong SLR Number".format(ERROR))
+            exit()
+    elif(board == 'U50'):
+        if(len(slr_list) > 2):
+            print("[{}] Wrong SLR Number".format(ERROR))
+            exit()
+    elif(board == 'U280'):
+        if(len(slr_list) > 3):
+            print("[{}] Wrong SLR Number".format(ERROR))
+            exit()
+    else:
+        print("[{}] Wron Board Options!".format(ERROR) + board)
+        exit()
 
     # SLR Crossing FIFO
     if crossing:
@@ -238,6 +262,7 @@ def main(args):
     print("="*74 + "\n Tcl Generator\n" + "="*74)
 
     # Board Block Design
+    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}.tcl".format(board))))
     if(board == 'VCU118') :
         slr_phy_list = ['0','1','2']
         slr_phy_freq_list = ['300','300','300']
@@ -245,7 +270,7 @@ def main(args):
             for j in range(len(slr_phy_list)):
                 if(slr_list[i] == slr_phy_list[j]):
                     slr_phy_freq_list[j] = slr_freq_list[i]
-        VCU118_Tcl(bd_dir, ref_dir, slr_phy_freq_list)
+        VCU118_Tcl(bd_dir, ref_dir, slr_phy_freq_list, vivado_version=vivado_version)
     elif(board == 'U50') :
         slr_phy_list = ['0','1']
         slr_phy_freq_list = ['300','300']
@@ -253,99 +278,114 @@ def main(args):
             for j in range(len(slr_phy_list)):
                 if(slr_list[i] == slr_phy_list[j]):
                     slr_phy_freq_list[j] = slr_freq_list[i]
-        U50_Tcl(bd_dir, ref_dir, slr_phy_freq_list, hbm_clk_freq=hbm_clk_freq)
-    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}.tcl".format(board))))
+        U50_Tcl(bd_dir, ref_dir, slr_phy_freq_list, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
+
+    else :
+        print("[ERROR] " + board + " is not supported, please check the name of Board")
+        return
 
     # CLK WIZ
-    CLK_WIZ_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_freq_list=slr_phy_freq_list, hbm_clk_freq=hbm_clk_freq)
     print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_CLK_WIZ.tcl".format(board))))
+    CLK_WIZ_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_freq_list=slr_phy_freq_list, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
 
     # XDMA_AXI Interconnet
+    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_XDMA_AXI_INC.tcl".format(board))))
     XDMA_AXI_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_list=slr_list, slr_freq_list=slr_freq_list, host_width_list=slr_host_width_list,
                 xdma_ddr_ch_list=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list ,ddr_dma_list=ddr_dma_list, ddr_dma_width_list=ddr_dma_width,
-                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, hbm_dma_width_list=hbm_dma_width_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq)
-    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_XDMA_AXI_INC.tcl".format(board))))
+                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, hbm_dma_width_list=hbm_dma_width_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
     
-    # AXI-Lite InterConnect
-    XDMA_AXI_Lite_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_list=slr_list, slr_freq_list=slr_freq_list) 
+    # XDMA_AXI-Lite InterConnect
     print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_XDMA_AXI_LITE_INC.tcl".format(board))))
+    XDMA_AXI_Lite_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_list=slr_list, slr_freq_list=slr_freq_list, vivado_version=vivado_version) 
 
+    
     # AXI InterConnect
+    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_AXI_INC.tcl".format(board))))
     AXI_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, slr_list=slr_list, slr_freq_list=slr_freq_list, host_width_list=slr_host_width_list,
                 xdma_ddr_ch_list=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list ,ddr_dma_list=ddr_dma_list, ddr_dma_width_list=ddr_dma_width,
-                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, hbm_dma_width_list=hbm_dma_width_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq)
-    print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_AXI_INC.tcl".format(board))))
+                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, hbm_dma_width_list=hbm_dma_width_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
+
 
     # DDR Block Design
-    if "ddr" in dma_type:
-        DDR_Tcl(bd_dir, ref_dir, board, xdma_ddr_ch=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list)
+
+    if "ddr" in memory_type:
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_DDR.tcl".format(board))))
-        DDR_AXI_INC_Tcl(bd_dir, ref_dir, board, xdma_ddr_ch=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list)
+        DDR_Tcl(bd_dir, ref_dir, board, xdma_ddr_ch=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, vivado_version=vivado_version)
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_DDR_AXI_INC.tcl".format(board))))
+        DDR_AXI_INC_Tcl(bd_dir, ref_dir, board, xdma_ddr_ch=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, vivado_version=vivado_version)
+
 
     # HBM Block Design
-    if "hbm" in dma_type:
-        HBM_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, 
-                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq)
+    if "hbm" in memory_type:
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_HBM.tcl".format(board))))
-        HBM_AXI_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, 
-                        hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq)
+        HBM_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, 
+                hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "{}_HBM_AXI_INC.tcl".format(board))))
+        HBM_AXI_INC_Tcl(filedir=bd_dir, refdir=ref_dir, board=board, 
+                        hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, xdma_hbm_port=xdma_hbm_port, hbm_clk_freq=hbm_clk_freq, vivado_version=vivado_version)
 
     # SLR Crossing
     if crossing:
-        Crossing_AXILite_Tcl(filedir=bd_dir, refdir=ref_dir, slr_list=slr_list, slr_freq_list=slr_freq_list)
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "CROSSING_AXI_LITE.tcl")))
+        Crossing_AXILite_Tcl(filedir=bd_dir, refdir=ref_dir, slr_list=slr_list, slr_freq_list=slr_freq_list, vivado_version=vivado_version)
     
-        Crossing_AXIS_Tcl(filedir=bd_dir, refdir=ref_dir, slr_list=slr_list, slr_freq_list=slr_freq_list,
-                          src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list)
         print("[Info ] Writing {}".format(os.path.join(bd_dir, "CROSSING_AXIS.tcl")))
+        Crossing_AXIS_Tcl(filedir=bd_dir, refdir=ref_dir, slr_list=slr_list, slr_freq_list=slr_freq_list,
+                          src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list, vivado_version=vivado_version)
     
     print("[{}] Generating Tcl Complete!".format(PASS))
     ############################################################
     # 4. Code Generator
     print("="*74 + "\n Code Generator\n" + "="*74)
+    
+    # Shell Parameter
+    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "{}_Shell_Params.sv".format(board))))
+    Shell_Params(filedir=wrapper_dir, board=board, slr_list=slr_list, host_width_list=slr_host_width_list, 
+                 ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, ddr_dma_width_list=ddr_dma_width, 
+                 hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_width_list=hbm_dma_width_list)
+
+    # SLR Wrapper
+    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "SLR.sv".format(board))))
+    SLR_Wrapper(filedir=wrapper_dir, board=board, slr_list=slr_list, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, ddr_dma_list=ddr_dma_list,
+                hbm_slr_list=hbm_slr_list,  hbm_port_list=hbm_port_list,  hbm_dma_list=hbm_dma_list,
+                crossing=crossing, src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list)
+
+    
+    # UserLogic Wrapper
+    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "User_Logic.sv".format(board))))
+    UserLogic(filedir=wrapper_dir, board=board, slr_list=slr_list, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, ddr_dma_list=ddr_dma_list,
+              hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, crossing=crossing, 
+              src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list)
 
     # Board Wrapper
+    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "{}_Wrapper.sv".format(board))))
     Board_Wrapper(filedir=wrapper_dir, board=board, slr_list=slr_list, slr_phy_list=slr_phy_list, 
                   xdma_ddr_ch=xdma_ddr_ch, ddr_dma_list=ddr_dma_list, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list,
                   xdma_hbm_port=xdma_hbm_port, hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list)
-    Shell_Params(filedir=wrapper_dir, board=board, slr_list=slr_list, 
-                 ddr_dma_width_list=ddr_dma_width, host_width_list=slr_host_width_list,
-                 hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_width_list=hbm_dma_width_list)
-    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "{}_Wrapper.sv".format(board))))
     
-    # SLR Wrapper
-    SLR_Wrapper(filedir=wrapper_dir, board=board, slr_list=slr_list, ddr_dma_list=ddr_dma_list, 
-                hbm_slr_list=hbm_slr_list,  hbm_port_list=hbm_port_list,  hbm_dma_list=hbm_dma_list,
-                crossing=crossing, src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list)
-    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "SLR.sv".format(board))))
-    
-    # UserLogic Wrapper
-    UserLogic(filedir=wrapper_dir, board=board, slr_list=slr_list, ddr_dma_list=ddr_dma_list, xdma_hbm_port=xdma_hbm_port,
-              hbm_slr_list=hbm_slr_list, hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, crossing=crossing, 
-              src_list=src_list, dest_list=dest_list, num_list=num_list, data_width_list=data_width_list)
-    print("[Info ] Writing {}".format(os.path.join(wrapper_dir, "User_Logic.sv".format(board))))
     
     print("[{}] Generating Code Complete!".format(PASS))
     ############################################################
     # 5. Xdc Generator
     print("="*74 + "\n Xdc Generator\n" + "="*74)
-    SLR_Xdc(filedir=xdc_dir, board=board, slr_list=slr_list)
     print("[Info ] Writing SLR xdc")
+    SLR_Xdc(filedir=xdc_dir, board=board, slr_list=slr_list)
+    print("[Info ] Writing INC xdc")
     INC_Xdc(filedir=xdc_dir, board=board, slr_list=slr_list, ddr_dma_list=ddr_dma_list, hbm_slr_list=hbm_slr_list,
             hbm_port_list=hbm_port_list, hbm_dma_list=hbm_dma_list, xdma_hbm_port=xdma_hbm_port,
-            xdma_ddr_ch_list=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list) 
-    print("[Info ] Writing INC xdc")
-    CLK_Xdc(filedir=xdc_dir, board=board)
+            xdma_ddr_ch_list=xdma_ddr_ch, ddr_slr_list=ddr_slr_list, ddr_ch_list=ddr_ch_list, version=vivado_version) 
     print("[Info ] Writing CLK xdc")
-    PIN_Xdc(filedir=xdc_dir, board=board)
+    CLK_Xdc(filedir=xdc_dir, board=board)
     print("[Info ] Writing PIN xdc")
+    PIN_Xdc(filedir=xdc_dir, board=board)
     print("[{}] Generating XDC Complete!".format(PASS))
+    
+    
     ############################################################
     # 6. End
     print("="*74)
 
+    return
 ################################################################
 # Function
 ################################################################
@@ -514,7 +554,7 @@ def slr_config(config, physical=False):
     return slr_list, slr_freq_list, slr_host_with_list
 
 # Create DDR DMA Configuration
-def ddr_dma_config(config, ddr_dma_max):
+def ddr_dma_config(config):
     xdma_ddr_ch = config["DDR"]["xdma_ddr_ch"]
     ddr_slr_list = config["DDR"]["ddr_slr_list"]
     ddr_ch_list = config["DDR"]["ddr_ch_list"]
@@ -525,7 +565,7 @@ def ddr_dma_config(config, ddr_dma_max):
     return ddr_dma_list, ddr_dma_width, xdma_ddr_ch, ddr_slr_list, ddr_ch_list
 
 # Create HBM DMA Configuration
-def hbm_dma_config(config, hbm_dma_max):
+def hbm_dma_config(config):
     # DMA List & Bitwidth List
     hbm_clk_freq = config["HBM"]["hbm_clk_freq"]
     xdma_hbm_port = config["HBM"]["xdma_hbm_port"]

@@ -11,22 +11,30 @@ import shutil
 ################################################################
 
 ''' HBM Tcl Generate '''
-def HBM_AXI_INC_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hbm_port, hbm_clk_freq):
+def HBM_AXI_INC_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hbm_port, hbm_clk_freq, vivado_version):
     # Copy and Open Reference Tcl File
+    total_hbm_port_list = ['false' for i in range(32)]
+    hbm_port_intf_list = [[]for i in range(32)]
+    if(xdma_hbm_port!=None):
+        total_hbm_port_list[int(xdma_hbm_port)] = 'true'
+        hbm_port_intf_list[int(xdma_hbm_port)].append('xdma')
+    if(hbm_port_list!=None):
+        for i in range(len(hbm_port_list)) :
+            total_hbm_port_list[int(hbm_port_list[i])] = 'true'
+            hbm_port_intf_list[int(hbm_port_list[i])].append(hbm_slr_list[i])
+
+    if 'true' in total_hbm_port_list : 
+        print("HBM Path Exist : HBM_AXI_INC.TCL Generated")
+    else :
+        print("No HBM Path : HBM_AXI_INC.Tcl Not Generated")
+        return
+
     gen_tcl = os.path.join(filedir, board + "_HBM_AXI_INC.tcl")
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_0.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_0.tcl")
     shutil.copy(ref_tcl, gen_tcl)
     # Change Tcl Name
     search_name = 'DESIGN_BOARD_NAME'
     replace_name = board + "_HBM_AXI_INC"
-
-    total_hbm_port_list = ['false' for i in range(32)]
-    hbm_port_intf_list = [[]for i in range(32)]
-    total_hbm_port_list[int(xdma_hbm_port)] = 'true'
-    hbm_port_intf_list[int(xdma_hbm_port)].append('xdma')
-    for i in range(len(hbm_port_list)) :
-        total_hbm_port_list[int(hbm_port_list[i])] = 'true'
-        hbm_port_intf_list[int(hbm_port_list[i])].append(hbm_slr_list[i])
 
     # print(len(hbm_port_intf_list))
     for line in fileinput.input(gen_tcl, inplace=True):
@@ -304,7 +312,7 @@ def HBM_AXI_INC_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hb
         #f_d.write("current_bd_design [get_bd_designs " + board + "_HBM_AXI_INC]\n")
         #f_d.write("set_property -dict [list CONFIG.ENABLE_DFX {true}] [get_bd_cells hier]\n")
     # End of file descriptor
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_1.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_1.tcl")
     with open(gen_tcl, 'a') as f_d, open(ref_tcl, 'r') as f_r:
         for line in f_r:
             f_d.write(line)

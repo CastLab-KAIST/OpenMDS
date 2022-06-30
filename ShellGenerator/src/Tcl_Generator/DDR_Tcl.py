@@ -11,7 +11,7 @@ import shutil
 ################################################################
 
 ''' DDR Tcl Generate '''
-def DDR_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_list=None):
+def DDR_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_list=None, vivado_version="2020.2"):
     
     if(board == 'VCU118'):
         total_ddr_ch_list = ['false' for i in range(2)]
@@ -26,8 +26,6 @@ def DDR_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_
 
     elif(board == 'U280'):
         total_ddr_ch_list = ['false' for i in range(2)]
-        print("Implementing")
-        return os.exit()
     
     if(xdma_ddr_ch != None):
         for i in range(len(xdma_ddr_ch)):
@@ -37,17 +35,15 @@ def DDR_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_
         for i in range(len(ddr_ch_list)):
             total_ddr_ch_list[int(ddr_ch_list[i])] = 'true'
 
-    if 'true' in total_ddr_ch_list :
-        print("total_ddr_ch_list")
-        print(total_ddr_ch_list)
-
+    if 'true' in total_ddr_ch_list : 
+        print("DDR Path Exist : DDR.TCL Generated")
     else :
         print("No DDR Path : DDR.Tcl Not Generated")
         return
 
     # Copy and Open Reference Tcl File
     gen_tcl = os.path.join(filedir, board + "_DDR.tcl")
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_0.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_0.tcl")
     shutil.copy(ref_tcl, gen_tcl)
     # Change Tcl Name
     search_name = 'DESIGN_BOARD_NAME'
@@ -182,10 +178,12 @@ def DDR_Tcl(filedir, refdir, board, xdma_ddr_ch=None, ddr_slr_list=None, ddr_ch_
             # End of address
             f_d.write("\n")
         # End of VCU118 generate
-        elif(board == 'U280') :
-            print("not yet u280")
+#######################################
+#######################################
+#######################################
+#######################################
     # End of file descriptor
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_1.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_1.tcl")
     with open(gen_tcl, 'a') as f_d, open(ref_tcl, 'r') as f_r:
         for line in f_r:
             f_d.write(line)

@@ -11,22 +11,32 @@ import shutil
 ################################################################
 
 ''' HBM Tcl Generate '''
-def HBM_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hbm_port, hbm_clk_freq):
+def HBM_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hbm_port, hbm_clk_freq, vivado_version):
     # Copy and Open Reference Tcl File
+    total_hbm_port_list = ['false' for i in range(32)]
+    hbm_port_intf_list = [[]for i in range(32)]
+    if(xdma_hbm_port!=None):
+        total_hbm_port_list[int(xdma_hbm_port)] = 'true'
+        hbm_port_intf_list[int(xdma_hbm_port)].append('xdma')
+    if(hbm_port_list!=None):
+        for i in range(len(hbm_port_list)) :
+            total_hbm_port_list[int(hbm_port_list[i])] = 'true'
+            hbm_port_intf_list[int(hbm_port_list[i])].append(hbm_slr_list[i])
+
+    if 'true' in total_hbm_port_list : 
+        print("HBM Path Exist : HBM.TCL Generated")
+    else :
+        print("No HBM Path : HBM.Tcl Not Generated")
+        return
+    
     gen_tcl = os.path.join(filedir, board + "_HBM.tcl")
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_0.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_0.tcl")
     shutil.copy(ref_tcl, gen_tcl)
     # Change Tcl Name
     search_name = 'DESIGN_BOARD_NAME'
     replace_name = board + "_HBM"
 
-    total_hbm_port_list = ['false' for i in range(32)]
-    hbm_port_intf_list = [[]for i in range(32)]
-    total_hbm_port_list[int(xdma_hbm_port)] = 'true'
-    hbm_port_intf_list[int(xdma_hbm_port)].append('xdma')
-    for i in range(len(hbm_port_list)) :
-        total_hbm_port_list[int(hbm_port_list[i])] = 'true'
-        hbm_port_intf_list[int(hbm_port_list[i])].append(hbm_slr_list[i])
+    
 
     # print(len(hbm_port_intf_list))
     for line in fileinput.input(gen_tcl, inplace=True):
@@ -229,23 +239,8 @@ def HBM_Tcl(filedir, refdir, board, hbm_slr_list, hbm_port_list, xdma_hbm_port, 
                 f_d.write("}] \n")
         # Start of address assign
         # End of address assign
-        #f_d.write("group_bd_cells hier [get_bd_cells [list *]]\n")
-        #f_d.write("validate_bd_design\n")
-        #f_d.write("startgroup\n")
-        #f_d.write("set curdesign [current_bd_design]\n")
-        #f_d.write("create_bd_design -cell [get_bd_cells /hier] " + board + "_HBM_container\n")
-        #f_d.write("current_bd_design $curdesign\n")
-        #f_d.write("set new_cell [create_bd_cell -type container -reference " + board + "_HBM_container hier_temp]\n")
-        #f_d.write("replace_bd_cell [get_bd_cells /hier] $new_cell\n")
-        #f_d.write("delete_bd_objs  [get_bd_cells /hier]\n")
-        #f_d.write("set_property name hier $new_cell\n")
-        #f_d.write("endgroup\n")
-        #f_d.write("current_bd_design [get_bd_designs " + board + "_HBM_container]\n")
-        #f_d.write("update_compile_order -fileset sources_1\n")
-        #f_d.write("current_bd_design [get_bd_designs " + board + "_HBM]\n")
-        #f_d.write("set_property -dict [list CONFIG.ENABLE_DFX {true}] [get_bd_cells hier]\n")
     # End of file descriptor
-    ref_tcl = os.path.join(refdir, "Tcl_Necessary_1.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/Tcl_Necessary_1.tcl")
     with open(gen_tcl, 'a') as f_d, open(ref_tcl, 'r') as f_r:
         for line in f_r:
             f_d.write(line)

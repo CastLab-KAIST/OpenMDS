@@ -11,10 +11,10 @@ import fileinput
 ################################################################
 
 ''' VCU Generator '''
-def VCU118_Tcl(filedir, refdir, slr_freq_list):
+def VCU118_Tcl(filedir, refdir, slr_freq_list, vivado_version):
     # Copy and Open Reference Tcl File
     gen_tcl = os.path.join(filedir, "0_VCU118.tcl")
-    ref_tcl = os.path.join(refdir, "VCU118.tcl")
+    ref_tcl = os.path.join(refdir, vivado_version + "/VCU118.tcl")
     shutil.copy(ref_tcl, gen_tcl)
     ## Change SLR Clock Frequency
     #for idx, clk in enumerate(slr_freq_list):

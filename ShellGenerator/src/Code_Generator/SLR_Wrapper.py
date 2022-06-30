@@ -3,13 +3,12 @@
 ################################################################
 import os
 from . import Prefix
-
 ################################################################
 # Function
 ################################################################
 
 ''' SLR Wrapper Generate '''
-def SLR_Wrapper(filedir, board, slr_list, ddr_dma_list=None, hbm_slr_list=None,  hbm_port_list=None,  hbm_dma_list=None,
+def SLR_Wrapper(filedir, board, slr_list, ddr_slr_list=None, ddr_ch_list=None, ddr_dma_list=None, hbm_slr_list=None,  hbm_port_list=None,  hbm_dma_list=None,
                 crossing=False, src_list=None, dest_list=None, num_list=None, data_width_list=None):
     for idx, slr_num in enumerate(slr_list):
         # Create and Write SLL0.sv file
@@ -30,30 +29,69 @@ def SLR_Wrapper(filedir, board, slr_list, ddr_dma_list=None, hbm_slr_list=None, 
                 f.write("    input  {0:76} {1},\n".format("logic", slr_prefix[0][1]))           # CLK
                 f.write("    input  {0:76} {1},\n".format("logic", slr_prefix[1][1]))           # RESETN
                 # DDR DMA AXI Ports
-                for ddr_dma_num in range(int(ddr_dma_list[idx])):
-                    ddr_dma_prefix, ddr_dma_prefix_len = Prefix.get_ddr_dma_prefix(slr_num, ddr_dma_num)
-                    for n in range(ddr_dma_prefix_len):
-                        f.write("    {0:6} {1:5} {2:70} {3},\n".format(ddr_dma_prefix[n][0], ddr_dma_prefix[n][1], ddr_dma_prefix[n][2], ddr_dma_prefix[n][3]))
+                for n in range(len(ddr_slr_list)):
+                    if slr_num == ddr_slr_list[n]:
+                        for hbm_ddr_num in range(int(ddr_dma_list[n])):
+                            ddr_dma_prefix, ddr_dma_prefix_len = Prefix.get_ddr_dma_prefix(ddr_slr_list[n], ddr_ch_list[n], hbm_ddr_num)
+                            for m in range(ddr_dma_prefix_len):
+                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(ddr_dma_prefix[m][0], ddr_dma_prefix[m][1], ddr_dma_prefix[m][2], ddr_dma_prefix[m][3]))
+                
+                #for ddr_dma_num in range(int(ddr_dma_list[idx])):
+                #    ddr_dma_prefix, ddr_dma_prefix_len = Prefix.get_ddr_dma_prefix(slr_num, ddr_dma_num)
+                #    Prefix.get_ddr_dma_prefix
+                #    for n in range(ddr_dma_prefix_len):
+                #        f.write("    {0:6} {1:5} {2:70} {3},\n".format(ddr_dma_prefix[n][0], ddr_dma_prefix[n][1], ddr_dma_prefix[n][2], ddr_dma_prefix[n][3]))
                 # SLR Crossing Ports
                 if crossing:
-                    pos = [x for x in range(len(slr_list)) if slr_list[x] == slr_num]
+                    for i in range(len(src_list)):
+                        if(slr_num == src_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            fifo_width = data_width_list[i]
+                            fifo_number = num_list[i]
+                            for fifo_num in range(int(fifo_number)):
+                                crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
+                                for n in range(3, crossing_stream_prefix_len):
+                                    f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+                    
+                    for i in range(len(dest_list)):
+                        if(slr_num == dest_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            fifo_width = data_width_list[i]
+                            fifo_number = num_list[i]
+                            for fifo_num in range(int(fifo_number)):
+                                crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_dest, slr_src, fifo_width, fifo_num)
+                                for n in range(0, 3):
+                                    f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+
+                    
                     # AXI-Stream
-                    for idx in pos:
-                        slr_src = src_list[idx]
-                        slr_dest = dest_list[idx]
-                        fifo_width = data_width_list[idx]
-                        fifo_number = num_list[idx]
-                        for fifo_num in range(int(fifo_number)):
-                            crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
-                            for n in range(crossing_stream_prefix_len):
-                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+                    #for idx in pos:
+                    #    slr_src = src_list[idx]
+                    #    slr_dest = dest_list[idx]
+                    #    fifo_width = data_width_list[idx]
+                    #    fifo_number = num_list[idx]
+                    #    for fifo_num in range(int(fifo_number)):
+                    #        crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
+                    #        for n in range(crossing_stream_prefix_len):
+                    #            f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
                     # AXI-Lite
-                    for idx in pos:
-                        slr_src = src_list[idx]
-                        slr_dest = dest_list[idx]
-                        crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_src, slr_dest)
-                        for n in range(crossing_lite_prefix_len):
-                            f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
+                    for i in range(len(src_list)):
+                        if(slr_num == src_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_src, slr_dest)
+                            for n in range(19, crossing_lite_prefix_len):
+                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
+
+                    for i in range(len(dest_list)):
+                        if(slr_num == dest_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_dest, slr_src)
+                            for n in range(0, 19):
+                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
                 # Host AXI-Lite Ports
                 host_lite_prefix, host_lite_prefix_len = Prefix.get_axilite_host_prefix(slr_num)
                 for h in range(host_lite_prefix_len - 1):
@@ -92,24 +130,54 @@ def SLR_Wrapper(filedir, board, slr_list, ddr_dma_list=None, hbm_slr_list=None, 
                                 f.write("    {0:6} {1:5} {2:70} {3},\n".format(hbm_dma_prefix[m][0], hbm_dma_prefix[m][1], hbm_dma_prefix[m][2], hbm_dma_prefix[m][3]))
                 # SLR Crossing Ports
                 if crossing:
-                    pos = [x for x in range(len(slr_list)) if slr_list[x] == slr_num]
+                    for i in range(len(src_list)):
+                        if(slr_num == src_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            fifo_width = data_width_list[i]
+                            fifo_number = num_list[i]
+                            for fifo_num in range(int(fifo_number)):
+                                crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
+                                for n in range(3, crossing_stream_prefix_len):
+                                    f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+                    
+                    for i in range(len(dest_list)):
+                        if(slr_num == dest_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            fifo_width = data_width_list[i]
+                            fifo_number = num_list[i]
+                            for fifo_num in range(int(fifo_number)):
+                                crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_dest, slr_src, fifo_width, fifo_num)
+                                for n in range(0, 3):
+                                    f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+
                     # AXI-Stream
-                    for idx in pos:
-                        slr_src = src_list[idx]
-                        slr_dest = dest_list[idx]
-                        fifo_width = data_width_list[idx]
-                        fifo_number = num_list[idx]
-                        for fifo_num in range(int(fifo_number)):
-                            crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
-                            for n in range(crossing_stream_prefix_len):
-                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
+                    #for idx in pos:
+                    #    slr_src = src_list[idx]
+                    #    slr_dest = dest_list[idx]
+                    #    fifo_width = data_width_list[idx]
+                    #    fifo_number = num_list[idx]
+                    #    for fifo_num in range(int(fifo_number)):
+                    #        crossing_stream_prefix, crossing_stream_prefix_len = Prefix.get_crossing_stream_prefix(slr_src, slr_dest, fifo_width, fifo_num)
+                    #        for n in range(crossing_stream_prefix_len):
+                    #            f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_stream_prefix[n][0], crossing_stream_prefix[n][1], crossing_stream_prefix[n][2], crossing_stream_prefix[n][3]))
                     # AXI-Lite
-                    for idx in pos:
-                        slr_src = src_list[idx]
-                        slr_dest = dest_list[idx]
-                        crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_src, slr_dest)
-                        for n in range(crossing_lite_prefix_len):
-                            f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
+                    for i in range(len(src_list)):
+                        if(slr_num == src_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_src, slr_dest)
+                            for n in range(19, crossing_lite_prefix_len):
+                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
+
+                    for i in range(len(dest_list)):
+                        if(slr_num == dest_list[i]):
+                            slr_src = src_list[i]
+                            slr_dest = dest_list[i]
+                            crossing_lite_prefix, crossing_lite_prefix_len = Prefix.get_crossing_lite_prefix(slr_dest, slr_src)
+                            for n in range(0, 19):
+                                f.write("    {0:6} {1:5} {2:70} {3},\n".format(crossing_lite_prefix[n][0], crossing_lite_prefix[n][1], crossing_lite_prefix[n][2], crossing_lite_prefix[n][3]))
                 # Host AXI-Lite Ports
                 host_lite_prefix, host_lite_prefix_len = Prefix.get_axilite_host_prefix(slr_num)
                 for h in range(host_lite_prefix_len - 1):
@@ -126,6 +194,3 @@ def SLR_Wrapper(filedir, board, slr_list, ddr_dma_list=None, hbm_slr_list=None, 
                 f.write(");\n")
                 f.write("\n\nendmodule")
             
-            # U280 Board
-            if board == "U280":
-                return

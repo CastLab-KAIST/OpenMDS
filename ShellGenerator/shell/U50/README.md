@@ -2,17 +2,19 @@
 
 ## Global Address Map
 
-|AXI4 Component|High Address|Low Address|
+|AXI4 Component|Low Address|High Address|
 |---|---|---|
-|HBM|0x1_FFFF_FFFF|0x0_0000_0000|
-|SLR0|0x2_FFFF_FFFF|0x2_0000_0000|
-|SLR1|0x3_FFFF_FFFF|0x3_0000_0000|
+|SLR0|0x00_0000_0000|0x00_FFFF_FFFF|
+|SLR1|0x01_0000_0000|0x01_FFFF_FFFF|
+|HBM|0x10_0000_0000|0x11_FFFF_FFFF|
 
-|AXI4-Lite Component|High Address|Low Address|
+|AXI4-Lite Component|Low Address|High Address|
 |---|---|---|
-|Empty|0x1_FFFF|0x0_0000|
-|SLR0-LITE|0X2_FFFF|0x1_0000|
-|SLR1-LITE|0X3_FFFF|0x2_0000|
-|Empty|0x4_1FFF|0x4_0000|
-|SLR0_CLK|0x4_2FFF|0x4_2000|
-|SLR1_CLK|0x4_3FFF|0x4_3000|
+|SLR0-LITE|0x10_0000|0X10_FFFF|
+|SLR1-LITE|0X11_0000|0x11_FFFF|
+
+|Clock Component|Address Offset|
+|---|---|
+|SLR0_CLK|0x00_0000|
+|SLR1_CLK|0x00_1000|
+|HBM_CLK|0x00_2000|

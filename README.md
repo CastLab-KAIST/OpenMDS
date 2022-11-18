@@ -229,3 +229,14 @@ Example : Read SLR0_CLK current frequency
 Example : Adjust SLR0_CLK frequency to 200 MHz
 <pre><code>./ClockCalculator /dev/xdma0_user 0x000000 w 200
 </code></pre>
+
+## Citation
+Utilies and experiment of the OpenMDS is illustrated in the IEEE Computer Architecture Letters paper:
+
+>Gyeongcheol Shin, Junsoo Kim, and Joo-Young Kim,
+[**OpenMDS: An Open-Source Shell Generation Framework for High-Performance Design on Xilinx Multi-Die FPGAs**](https://ieeexplore.ieee.org/document/9868126)
+IEEE Computer Architecture Letters, vol. 21, no. 2, July-December 2022
+
+Please cite the above work if you make use of the tools provided in this repository.
+The presentations of the paper are availagble on YouTube:
+

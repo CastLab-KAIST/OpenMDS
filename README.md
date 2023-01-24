@@ -239,5 +239,4 @@ IEEE Computer Architecture Letters, vol. 21, no. 2, July-December 2022
 
 Please cite the above work if you make use of the tools provided in this repository.
 
-The presentations of the paper are availagble on YouTube:
-
+The presentations of the paper are availagble on YouTube:https://youtu.be/3pZn-DmmJPk
